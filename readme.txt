@@ -18,5 +18,5 @@
 FreeGLUT считается устаревшей библиотекой для управления окнами. SDL даёт большую свободу в части обработки событий
 
 # Настройка Visual Studio
-Добавляем соответствующие директории библиотек GLEW и SDL в Include Directories, Librariy Directories.
-Добавляем зависимости в Linker (opengl32.lib, glew32.lib, SDL2.lib, SDL2main.lib) и копируем glew32.dll, SDL2.dll в директорию проекта
+Добавляем соответствующие директории библиотек GLEW и SDL в Include Directories (для сигнатур функций), Librariy Directories (определение функций).
+Добавляем зависимости в Linker (opengl32.lib, glew32.lib, SDL2.lib, SDL2main.lib) (какие библиотеки использовать) и копируем glew32.dll, SDL2.dll в директорию проекта
