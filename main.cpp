@@ -8,7 +8,6 @@ int main(int argc, char* argv[]) {
     Control control(model);
     View view(model);
 
-    SDL_Event event;
     while (true) {
         control.handleInput();
 
