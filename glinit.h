@@ -1,8 +1,8 @@
 #ifndef GLINIT_H
 #define GLINIT_H
 
-#include <SDL.h>
-#include <glew.h>
+#include "SDL.h"
+#include "glew.h"
 #include <iostream>
 
 using namespace std;
