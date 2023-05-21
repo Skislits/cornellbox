@@ -2,22 +2,27 @@
  
 in vec3 fragment_color;
 in vec3 fragment_position;
-in vec3 vertex_normal;
+in vec3 fragment_normal;
 uniform vec3 light_position; // uniform variables doesn't change during a render call
 uniform vec3 camera_position;
 
 out vec3 color_out;
  
 void main() {
-    vec3 ambient = vec3(1.f, 1.f, 1.f);
- 
-    vec3 normal = normalize(vertex_normal);
-    vec3 vertex_to_light = normalize(light_position - fragment_position);  
-    vec3 diffuse = max(dot(normal, vertex_to_light), 0.0) * vec3(1.f, 1.f, 1.f);
-     
+    vec3 light_color = vec3(1.f, 1.f, 1.f);
+    
+    // calculating ambient lighting
+    vec3 ambient = 0.2f * light_color;
+    
+    // calculating diffuse color
+    vec3 normal = normalize(fragment_normal);
+    vec3 fragment_to_light = normalize(light_position - fragment_position);  
+    vec3 diffuse = max(dot(normal, fragment_to_light), 0.0) * light_color;
+    
+    // specular lighting
     vec3 camera_direction = normalize(camera_position - fragment_position);
-    vec3 reflection_direction = reflect(-vertex_to_light, normal);  
-    vec3 specular = pow(max(dot(camera_direction, reflection_direction), 0.0), 32) * vec3(1.f, 1.f, 1.f); 
+    vec3 reflection_direction = reflect(-fragment_to_light, normal);  
+    vec3 specular = 0.3f * pow(max(dot(camera_direction, reflection_direction), 0.0), 32) * light_color; 
      
-    color_out = (0.2f*ambient + 0.7f*diffuse + 0.3f*specular)*fragment_color;
+    color_out = (ambient + diffuse + specular) * fragment_color;
 }

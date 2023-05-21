@@ -169,8 +169,8 @@ View::SceneLoader::SceneLoader(View& view) :view(view) {
 		(void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(color_in_attrib);
 
-	GLint vertex_normal_attrib = glGetAttribLocation(view.shader_program, "vertex_normal_in");
-	glVertexAttribPointer(vertex_normal_attrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
+	GLint fragment_normal_attrib = glGetAttribLocation(view.shader_program, "fragment_normal_in");
+	glVertexAttribPointer(fragment_normal_attrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
 		(void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(vertex_normal_attrib);
+	glEnableVertexAttribArray(fragment_normal_attrib);
 }
