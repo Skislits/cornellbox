@@ -27,16 +27,28 @@ Model-View-Control дизайн означает разделение прогр
 
 # Rendering Pipeline
 https://www.khronos.org/opengl/wiki/Rendering_Pipeline_Overview
-
 1. Vertex Specification*
 https://www.khronos.org/opengl/wiki/Vertex_Specification
 Описываем структуру данных моделей и загружаем сами данные
-
 2. Vertex Processing/Vertex Shader*
 Shader -- это программа, которая выполняется на GPU. Используется для определния параметров геометрических объектов или изображения, 
 для наложения эффектов на изображение: сдвиг, отражение, преломление, затемнение, наложение текстур
-
 3. Fragment Shader*
+
+# Camera
+Цель камеры трансформировать координаты модели в clip coordinates и поместить в clip space
+http://www.opengl-tutorial.org/beginners-tutorials/tutorial-6-keyboard-and-mouse/
+
+# Model-View-Projection (MVP) matrix
+1. Model matrix помещает модель на её место в сцене путём масштабирования, вращения и перемещения (порядок действий важен). 
+Перемещение объектов по сцене осуществляется с помощью изменения model matrix. Координаты модели -> Мировые координаты
+2. View matrix перемещает сцену. Позиция, на которую смотрит камера, помещается в центр clip space. Мировые координаты -> Координаты относительно камеры
+Для действий с матрицами использована OpenGL Mathematics Library (GLM). Эта библиотека состоит только из .h файлов, 
+поэтому её необходимо добавить только в include directories. 
+3. Projection matrix добавляет эффект перспективы. Масштабирует сцену таким образом, чтобы перейти от координат камеры к координатам внутри Clip space.
+Координаты относительно камеры -> Clip coordinates
+http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
 # Сложности
 - Оставлять только минимально необходимую информацию из всего объёма: процесс рендеринга, линейная алгебра, перспектива, свет
+- Имплементация камеры: много работы с геометрией при перемещении камеры
