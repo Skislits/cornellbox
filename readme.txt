@@ -27,8 +27,16 @@ Model-View-Control дизайн означает разделение прогр
 
 # Rendering Pipeline
 https://www.khronos.org/opengl/wiki/Rendering_Pipeline_Overview
-Вручную необходимо делать только vertex и fragment shader
-Shader -- это программа, которая выполняется на GPU. 
+
+1. Vertex Specification*
+https://www.khronos.org/opengl/wiki/Vertex_Specification
+Описываем структуру данных моделей и загружаем сами данные
+
+2. Vertex Processing/Vertex Shader*
+Shader -- это программа, которая выполняется на GPU. Используется для определния параметров геометрических объектов или изображения, 
+для наложения эффектов на изображение: сдвиг, отражение, преломление, затемнение, наложение текстур
+
+3. Fragment Shader*
 
 # Сложности
 - Оставлять только минимально необходимую информацию из всего объёма: процесс рендеринга, линейная алгебра, перспектива, свет
