@@ -11,19 +11,32 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
-using namespace glm;
-
 class View {
 private:
 	Model& model;
 	GLuint mvp_uniform_attribute;
+	GLuint shader_program;
+
+	class SceneLoader {
+	private:
+		View& view;
+		std::vector<float> rectangle_data_vector;
+		void loadAllRectangles();
+		void loadBlock(const Block& block);
+		void loadRectangle(const Rectangle& rectangle);
+		void loadRectangleVertex(const int& vertex_number, const Rectangle& rectangle);
+	public:
+		GLuint number_of_vertices_in_scene;
+		SceneLoader(View& view);
+	};
+	SceneLoader* scene_loader;
 public:
 	View(Model& model);
+	~View();
 	Camera camera = Camera();
 	void render(SDL_Window* window);
 };
 
-GLuint LoadShader(string shader_file_name, GLenum shader_type);
+GLuint LoadShader(std::string shader_file_name, GLenum shader_type);
 
 #endif
