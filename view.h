@@ -18,9 +18,9 @@ class View {
 private:
 	Model& model;
 	GLuint mvp_uniform_attribute;
-	Camera camera = Camera();
 public:
 	View(Model& model);
+	Camera camera = Camera();
 	void render(SDL_Window* window);
 };
 

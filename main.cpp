@@ -5,9 +5,9 @@ int main(int argc, char* argv[]) {
     init(window);
 
     Model model;
-    Control control(model);
     View view(model);
-
+    Control control(model, view);
+    
     while (true) {
         control.handleInput();
 
