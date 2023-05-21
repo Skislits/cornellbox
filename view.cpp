@@ -43,14 +43,10 @@ View::View(Model& model) : model(model) {
 	// each line = vertex
 	// first three values are xyz coordinates and the last three values are RGB colors
 	float triangle_data[] = {
-        -0.7, -0.5, -0.5, 1.,  0, 0,
-         0.5, -0.5, -0.5, 1.,  0, 0,
-         0.5,  0.7, -0.5, 1.,  0, 0,
-        -0.5, -0.7,    0,  0, 1., 0,
-         0.7,  0.5,    0,  0, 1., 0,
-        -0.5,  0.5,    0,  0, 1., 0
+        -0.5, -0.5, 0, 1.,  0, 0,
+         0.5, -0.5, 0, 1.,  0, 0,
+         0.5,  0.5, 0, 1.,  0, 0
 	};
-	// green triangle in the back because clip space is a left handed coordinate system
 
 	// create vertex buffer object (VBO), get a handle to the buffer, load triangle vertices into the buffer
 	GLuint triangle_buffer;
@@ -70,14 +66,54 @@ View::View(Model& model) : model(model) {
 	GLint color_in_attribute = glGetAttribLocation(shader_program, "color_input");
 	glVertexAttribPointer(color_in_attribute, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(color_in_attribute);
+
+	// get a handle to the "mvp" variable in shader program
+	mvp_uniform_attribute = glGetUniformLocation(shader_program, "mvp");
 }
 
 void View::render(SDL_Window* window) {
 	// clear color and depth buffer, in order the camera might have moved
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// render objects from buffer
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	// first triangle
+	// model matrix
+	vec3 scaling(1.f, 1.f, 1.f);
+	vec3 translation(-0.5f, 0, 0);
+	vec3 rotation_axis(0, 1.f, 0);
+	float rotation_angle = 0;
+	mat4 model_matrix = translate(
+		rotate(
+			scale(mat4(1.f), scaling),
+			rotation_angle,
+			rotation_axis
+		),
+		translation
+	);
+	
+	// MVP matrix
+	mat4 model_view_projection = model_matrix;
+
+	glUniformMatrix4fv(mvp_uniform_attribute, 1, GL_FALSE, &model_view_projection[0][0]);
+
+	// render object from buffer
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	// second triangle
+	translation = vec3(0.5f, 0, 0);
+	model_matrix = translate(
+		rotate(
+			scale(mat4(1.f), scaling),
+			rotation_angle,
+			rotation_axis
+		),
+		translation
+	);
+
+	model_view_projection = model_matrix;
+
+	glUniformMatrix4fv(mvp_uniform_attribute, 1, GL_FALSE, &model_view_projection[0][0]);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	// force execution of GL commands in finite time
 	glFlush();
