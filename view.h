@@ -6,6 +6,7 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "model.h"
+#include "camera.h"
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -17,6 +18,7 @@ class View {
 private:
 	Model& model;
 	GLuint mvp_uniform_attribute;
+	Camera camera = Camera();
 public:
 	View(Model& model);
 	void render(SDL_Window* window);
