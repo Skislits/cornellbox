@@ -12,13 +12,16 @@ class Camera {
 	float near_plane = 0.1f;
 	float far_plane = 100.f;
 public:
-	mat4 view_matrix;
+	mat4 view_matrix = lookAt(position, position + direction, up);
 	mat4 projection_matrix = perspective(field_of_view, aspect_ratio, near_plane, far_plane);
 
 	vec3 position = vec3(0, 0, 1);
 	vec3 direction = vec3(0, 0, -1);
 	vec3 right = vec3(1, 0, 0);
 	vec3 up = vec3(0, 1, 0);
+
+	float yaw = 0;
+	float pitch = 0;
 
 	Camera();
 
