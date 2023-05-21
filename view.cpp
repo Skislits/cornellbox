@@ -75,10 +75,17 @@ void View::render(SDL_Window* window) {
 	// clear color and depth buffer, in order the camera might have moved
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	vec3 camera_position(0, 0, 1.f);
+	vec3 camera_direction(0, 0, -1.f);
+	vec3 camera_up(0, 1.f, 0);
+	mat4 view_matrix = lookAt(camera_position, camera_position + camera_direction, camera_up);
+
+	mat4 projection_matrix = perspective(1.57f, 4.f / 3.f, 0.1f, 100.f);
+
 	// first triangle
 	// model matrix
 	vec3 scaling(1.f, 1.f, 1.f);
-	vec3 translation(-0.5f, 0, 0);
+	vec3 translation(-0.5f, 0, 0.1f);
 	vec3 rotation_axis(0, 1.f, 0);
 	float rotation_angle = 0;
 	mat4 model_matrix = translate(
@@ -91,7 +98,7 @@ void View::render(SDL_Window* window) {
 	);
 	
 	// MVP matrix
-	mat4 model_view_projection = model_matrix;
+	mat4 model_view_projection = projection_matrix * view_matrix * model_matrix;
 
 	glUniformMatrix4fv(mvp_uniform_attribute, 1, GL_FALSE, &model_view_projection[0][0]);
 
@@ -99,7 +106,7 @@ void View::render(SDL_Window* window) {
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	// second triangle
-	translation = vec3(0.5f, 0, 0);
+	translation = vec3(0.5f, 0, -0.1f);
 	model_matrix = translate(
 		rotate(
 			scale(mat4(1.f), scaling),
@@ -109,7 +116,7 @@ void View::render(SDL_Window* window) {
 		translation
 	);
 
-	model_view_projection = model_matrix;
+	model_view_projection = projection_matrix * view_matrix * model_matrix;
 
 	glUniformMatrix4fv(mvp_uniform_attribute, 1, GL_FALSE, &model_view_projection[0][0]);
 
