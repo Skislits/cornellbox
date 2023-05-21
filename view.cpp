@@ -1,6 +1,9 @@
 #include "view.h"
 
 View::View(Model& model) : model(model) {
+	// let OpenGL uses the z-values to determine what is in front of what
+	glEnable(GL_DEPTH_TEST);
+
 	// creates two compiled shader objects
 	GLuint vertex_shader = LoadShader(string("GLSL/vertex_shader.txt"), GL_VERTEX_SHADER);
 	GLuint fragment_shader = LoadShader(string("GLSL/fragment_shader.txt"), GL_FRAGMENT_SHADER);
@@ -40,10 +43,14 @@ View::View(Model& model) : model(model) {
 	// each line = vertex
 	// first three values are xyz coordinates and the last three values are RGB colors
 	float triangle_data[] = {
-		-0.5, -0.5, 0, 1., 0, 0,
-		 0.5, -0.5, 0, 1., 0, 0,
-		 0.5,  0.5, 0, 1., 0, 0
+        -0.7, -0.5, -0.5, 1.,  0, 0,
+         0.5, -0.5, -0.5, 1.,  0, 0,
+         0.5,  0.7, -0.5, 1.,  0, 0,
+        -0.5, -0.7,    0,  0, 1., 0,
+         0.7,  0.5,    0,  0, 1., 0,
+        -0.5,  0.5,    0,  0, 1., 0
 	};
+	// green triangle in the back because clip space is a left handed coordinate system
 
 	// create vertex buffer object (VBO), get a handle to the buffer, load triangle vertices into the buffer
 	GLuint triangle_buffer;
@@ -66,10 +73,16 @@ View::View(Model& model) : model(model) {
 }
 
 void View::render(SDL_Window* window) {
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+	// clear color and depth buffer, in order the camera might have moved
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// render objects from buffer
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	// force execution of GL commands in finite time
 	glFlush();
 
+	// used with double-buffered OpenGL contexts to swap context
 	SDL_GL_SwapWindow(window);
 }
 
