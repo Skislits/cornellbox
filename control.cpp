@@ -18,4 +18,9 @@ void Control::handleInput() {
 	if (key_state[SDL_SCANCODE_A]) { view.camera.position -= view.camera.right; }
 	if (key_state[SDL_SCANCODE_S]) { view.camera.position -= view.camera.direction; }
 	if (key_state[SDL_SCANCODE_D]) { view.camera.position += view.camera.right; }
+
+	if (key_state[SDL_SCANCODE_UP]) { view.light_position[2] += 10.0f; }
+	if (key_state[SDL_SCANCODE_DOWN]) { view.light_position[2] -= 10.0f; }
+	if (key_state[SDL_SCANCODE_LEFT]) { view.light_position[0] += 10.0f; }
+	if (key_state[SDL_SCANCODE_RIGHT]) { view.light_position[0] -= 10.0f; }
 }
