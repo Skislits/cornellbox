@@ -35,6 +35,8 @@ View::View(Model& model) : model(model) {
 
 	// get a handle to the "mvp" variable in shader program
 	mvp_uniform_attribute = glGetUniformLocation(shader_program, "mvp");
+	light_position_uniform_attribute = glGetUniformLocation(shader_program, "light_position");
+	camera_position_uniform_attribute = glGetUniformLocation(shader_program, "camera_position");
 
 	scene_loader = new SceneLoader(*this);
 }
@@ -48,11 +50,10 @@ void View::render(SDL_Window* window) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	camera.updateViewMatrix();
-
-	// MVP matrix
-	glm::mat4 model_view_projection = camera.projection_matrix * camera.view_matrix;
-
+	mat4 model_view_projection = camera.projection_matrix * camera.view_matrix;
 	glUniformMatrix4fv(mvp_uniform_attribute, 1, GL_FALSE, &model_view_projection[0][0]);
+	glUniform3fv(light_position_uniform_attribute, 1, &light_position[0]);
+	glUniform3fv(camera_position_uniform_attribute, 1, &camera.position[0]);
 
 	// render object from buffer
 	glDrawArrays(GL_TRIANGLES, 0, (*scene_loader).number_of_vertices_in_scene);
@@ -105,27 +106,33 @@ void View::SceneLoader::loadBlock(const Block& block) {
 }
 
 void View::SceneLoader::loadRectangle(const Rectangle& rectangle) {
+	// cross product between edge 0-1 and 0-2
+	vec3 rectangle_normal = normalize(cross(
+		(rectangle[0] - rectangle[1]), rectangle[0] - rectangle[2]));
 	// rectangle is rendered as two triangles
-	loadRectangleVertex(0, rectangle);
-	loadRectangleVertex(1, rectangle);
-	loadRectangleVertex(2, rectangle);
-	loadRectangleVertex(0, rectangle);
-	loadRectangleVertex(2, rectangle);
-	loadRectangleVertex(3, rectangle);
+	loadRectangleVertex(0, rectangle, rectangle_normal);
+	loadRectangleVertex(1, rectangle, rectangle_normal);
+	loadRectangleVertex(2, rectangle, rectangle_normal);
+	loadRectangleVertex(0, rectangle, rectangle_normal);
+	loadRectangleVertex(2, rectangle, rectangle_normal);
+	loadRectangleVertex(3, rectangle, rectangle_normal);
 }
 
-void View::SceneLoader::loadRectangleVertex(const int& vertex_number, const Rectangle& rectangle) {
+void View::SceneLoader::loadRectangleVertex(const int& vertex_number, const Rectangle& rectangle, const vec3& vertex_normal) {
 	for (size_t j = 0; j < 3; j++) {
 		rectangle_data_vector.push_back(rectangle[vertex_number][j]);
 	}
 	for (size_t i = 0; i < 3; i++) {
 		rectangle_data_vector.push_back(rectangle.RGB_color[i]);
 	}
+	for (size_t i = 0; i < 3; i++) {
+		rectangle_data_vector.push_back(vertex_normal[i]);
+	}
 }
 
 View::SceneLoader::SceneLoader(View& view) :view(view) {
 	loadAllRectangles();
-
+	
 	float* rectangle_data_array = new float[rectangle_data_vector.size()];
 	for (size_t i = 0; i < rectangle_data_vector.size(); i++) {
 		rectangle_data_array[i] = rectangle_data_vector[i];
@@ -153,12 +160,17 @@ View::SceneLoader::SceneLoader(View& view) :view(view) {
 	// data of the form floats, data which shouldn't be normalized, data which comes in chunks of 6
 	// take the three data values stating from byte 0 in such a chunk
 	GLint vertex_position_attrib = glGetAttribLocation(view.shader_program, "vertex_position");
-	glVertexAttribPointer(vertex_position_attrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(vertex_position_attrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(vertex_position_attrib);
 
 	// get a handle to the "color_input" input attribute, tell it to read 3 floats at a time
-	GLint texture_coordinate_attrib = glGetAttribLocation(view.shader_program, "color_input");
-	glVertexAttribPointer(texture_coordinate_attrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+	GLint color_in_attrib = glGetAttribLocation(view.shader_program, "color_input");
+	glVertexAttribPointer(color_in_attrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
 		(void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(texture_coordinate_attrib);
+	glEnableVertexAttribArray(color_in_attrib);
+
+	GLint vertex_normal_attrib = glGetAttribLocation(view.shader_program, "vertex_normal_in");
+	glVertexAttribPointer(vertex_normal_attrib, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float),
+		(void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(vertex_normal_attrib);
 }
