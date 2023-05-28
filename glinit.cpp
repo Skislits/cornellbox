@@ -10,7 +10,9 @@ void init(SDL_Window*& window) {
 
 	// disable deprecated functions
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	// select version
+	// select version GL 3.0 + GLSL 330
+	const char* glsl_version = "#version 330";
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1); // use double buffer
@@ -23,10 +25,24 @@ void init(SDL_Window*& window) {
 	if (window == NULL) {
 		cout << "Failed to create window at startup";
 	}
-	SDL_GL_CreateContext(window);
+	SDL_GLContext gl_context = SDL_GL_CreateContext(window); 
+	SDL_GL_MakeCurrent(window, gl_context); 
 	SDL_GL_SetSwapInterval(1); // swap buffer at the monitors rate
 
 	// set all GLEW functions available
 	glewExperimental = GL_TRUE;
 	glewInit();
+
+	// setup Dear ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // enable Keyboard Controls
+
+	// setup Dear ImGui style
+	ImGui::StyleColorsLight();
+
+	// setup Platform/Renderer backends
+	ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+	ImGui_ImplOpenGL3_Init(glsl_version);
 }

@@ -2,16 +2,17 @@
 
 Control::Control(Model& model, View& view) :model(model), view(view) {
 	key_state = SDL_GetKeyboardState(nullptr);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
+	// SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 void Control::handleInput() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
-		if (event.type == SDL_MOUSEMOTION) {
-			view.camera.pitch -= event.motion.yrel * 0.01f;
-			view.camera.yaw -= event.motion.xrel * 0.01f;
-		}
+		ImGui_ImplSDL2_ProcessEvent(&event);
+		//if (event.type == SDL_MOUSEMOTION) {
+		// 	view.camera.pitch -= event.motion.yrel * 0.01f;
+		//	view.camera.yaw -= event.motion.xrel * 0.01f;
+		//}
 	}
 
 	if (key_state[SDL_SCANCODE_W]) { view.camera.position += view.camera.direction; }

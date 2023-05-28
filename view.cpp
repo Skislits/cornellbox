@@ -43,11 +43,19 @@ View::View(Model& model) : model(model) {
 
 View::~View() {
 	delete scene_loader;
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void View::render(SDL_Window* window) {
 	// clear color and depth buffer, in order the camera might have moved
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
 
 	camera.updateViewMatrix();
 	mat4 model_view_projection = camera.projection_matrix * camera.view_matrix;
@@ -57,6 +65,14 @@ void View::render(SDL_Window* window) {
 
 	// render object from buffer
 	glDrawArrays(GL_TRIANGLES, 0, (*scene_loader).number_of_vertices_in_scene);
+
+	// show menu
+	ImGui::Begin("GUI window");
+	// ImGui::Text("Hello world");
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	// force execution of GL commands in finite time
 	glFlush();

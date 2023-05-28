@@ -3,6 +3,10 @@
 
 #include "SDL.h"
 #include "glew.h"
+#include "SDL_opengl.h"
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl3.h"
 #include <iostream>
 
 using namespace std;
