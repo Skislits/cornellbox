@@ -13,6 +13,7 @@ public:
     vector<vec3> rectangle_corners;
     Rectangle(vector<vec3> rectangle_corners, vec3 RGB_color);
     const vec3& operator[](const size_t& index) const;
+    void moveToPoint(vec3 first_corner);
 };
 
 class Block {
